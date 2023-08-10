@@ -12,6 +12,8 @@ import (
 var s server
 
 func HendlerAuth(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
 	query, err := url.ParseQuery(r.URL.RawQuery)
 	if err != nil {
 		util.Response(w, http.StatusBadRequest, []byte(err.Error()))
@@ -27,7 +29,7 @@ func HendlerAuth(w http.ResponseWriter, r *http.Request) {
 	switch {
 	case err == nil:
 		w.Header().Set("X-Token", token)
-		w.WriteHeader(http.StatusOK)
+		util.Response(w, http.StatusOK, nil)
 	case err.Error() == e.IsError(errAuthFailed, errors.New(blockedLogin)).Error():
 		util.Response(w, http.StatusForbidden, []byte(err.Error()))
 	case err.Error() == e.IsError(errAuthFailed, errors.New(unknownResponse)).Error():
