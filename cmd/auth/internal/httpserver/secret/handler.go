@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/auth-api/cmd/auth/internal/dbms"
+	"github.com/auth-api/cmd/auth/internal/logger"
 	"github.com/auth-api/cmd/auth/internal/util"
 )
 
@@ -11,7 +13,7 @@ var s serves
 
 func HandlerAudit(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-
+	logger.App.Debug("work", "who", "HandlerAudit")
 	token := r.Header.Get("X-Token")
 	if token == "" {
 		util.Response(w, http.StatusBadRequest, []byte("token is empty"))
@@ -20,7 +22,7 @@ func HandlerAudit(w http.ResponseWriter, r *http.Request) {
 
 	jsonAudit, err := s.audit(
 		token,
-		nil,
+		dbms.DBMS,
 	)
 
 	if err != nil {
@@ -41,7 +43,7 @@ func HandlerAudit(w http.ResponseWriter, r *http.Request) {
 
 func HandlerClearAudit(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-
+	logger.App.Debug("work", "who", "HandlerClearAudit")
 	token := r.Header.Get("X-Token")
 	if token == "" {
 		util.Response(w, http.StatusBadRequest, []byte("token is empty"))
@@ -50,7 +52,7 @@ func HandlerClearAudit(w http.ResponseWriter, r *http.Request) {
 
 	err := s.clearAudit(
 		token,
-		nil,
+		dbms.DBMS,
 	)
 
 	if err != nil {

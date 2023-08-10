@@ -3,6 +3,8 @@ package secret
 import (
 	"encoding/json"
 
+	"github.com/auth-api/cmd/auth/internal/logger"
+	"github.com/auth-api/cmd/auth/internal/model"
 	"github.com/auth-api/pkg/e"
 )
 
@@ -11,14 +13,12 @@ type recurse interface {
 	// метод возвращает список эветнов или ошибку встучии:
 	// проблем с бд,
 	// недействительного токена, "invalid token"
-	// ненайденого токена "token not found"
-	Audit(token string) (auditlist []Audit, err error)
+	Audit(token string) (auditlist []model.Audit, err error)
 
 	// отчищает список эвентов
 	// или ошибку встучии:
 	// проблем с бд,
 	// недействительного токена, "invalid token"
-	// ненайденого токена "token not foun"
 	ClearAudit(token string) (err error)
 }
 
@@ -34,7 +34,7 @@ const (
 
 func (serves) audit(token string, r recurse) (jsonAudit []byte, err error) {
 	defer func() { err = e.IsError(errAuthFailed, err) }()
-
+	logger.App.Debug("work", "who", "audit")
 	list, err := r.Audit(token)
 	if err != nil {
 		return nil, err
@@ -50,7 +50,7 @@ func (serves) audit(token string, r recurse) (jsonAudit []byte, err error) {
 
 func (serves) clearAudit(token string, r recurse) (err error) {
 	defer func() { err = e.IsError(errAuthFailed, err) }()
-
+	logger.App.Debug("work", "who", "clearAudit")
 	err = r.ClearAudit(token)
 	if err != nil {
 		return err

@@ -3,16 +3,18 @@ package public
 import (
 	"errors"
 
+	"github.com/auth-api/cmd/auth/internal/logger"
 	"github.com/auth-api/cmd/auth/internal/util"
 	"github.com/auth-api/pkg/e"
+	"github.com/google/uuid"
 )
 
 type resource interface {
-	Auth(login, password string) (id, msg string, err error)
-	Transaction() error
+	Auth(login, password string) (id uuid.UUID, msg string, err error)
+	Transaction(login string) error
 	Commit() error
 	Rollback() error
-	SteToken(id, token string) error
+	SteToken(id uuid.UUID, token string) error
 }
 
 const (
@@ -31,8 +33,8 @@ type server struct{}
 
 func (s *server) auth(login, password string, r resource) (token string, err error) {
 	defer func() { err = e.IsError(errAuthFailed, err) }()
-
-	err = r.Transaction()
+	logger.App.Debug("work", "who", "auth")
+	err = r.Transaction(login)
 	if err != nil {
 		r.Rollback()
 		return "", err
@@ -61,6 +63,8 @@ func (s *server) auth(login, password string, r resource) (token string, err err
 
 // обработка сообщений от resource
 func handlerMsg(msg string, r resource) (err error) {
+	logger.App.Debug("work", "who", "handlerMsg", "msg", msg)
+
 	switch msg {
 	case successfulLogin:
 		err = r.Commit()

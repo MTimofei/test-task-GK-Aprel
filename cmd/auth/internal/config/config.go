@@ -7,20 +7,33 @@ import (
 )
 
 type Config struct {
-	Evn    string `json:"env"`
-	Server Server `json:"server"`
+	Evn      string   `json:"env"`
+	Server   Addr     `json:"server"`
+	Postgres Postgres `json:"postgres"`
 }
-type Server struct {
+type Addr struct {
 	Port string `json:"port"`
 	Host string `json:"host"`
+}
+
+type Postgres struct {
+	Addr     Addr   `json:"addr"`
+	User     string `json:"user"`
+	Password string `json:"password"`
+	Database string `json:"database"`
 }
 
 var Cng Config
 
 var (
-	env  = flag.String("ENV", " ", "env")
-	port = flag.String("PORT", " ", "port")
-	host = flag.String("HOST", " ", "host")
+	env              = flag.String("ENV", " ", "env")
+	serverPort       = flag.String("SERVER-PORT", " ", "port")
+	serverHost       = flag.String("SERVER-HOST", " ", "host")
+	postgresUser     = flag.String("POSTGRES-USER", " ", "user")
+	postgresPassword = flag.String("POSTGRES-PASSWORD", " ", "password")
+	postgresDatabase = flag.String("POSTGRES-DATABASE", " ", "database")
+	postgresHost     = flag.String("POSTGRES-HOST", " ", "host")
+	postgresPort     = flag.String("POSTGRES-PORT", " ", "port")
 )
 
 // читаем содержимое конфиг файла
@@ -41,14 +54,39 @@ func mostParseFile(pathFile string, cng *Config) {
 // читаем флаги и заменяем значения, есле указаны
 func parseFlags(cng *Config) {
 	flag.Parse()
-	switch {
-	case *env != " ":
+
+	if *env != " " {
 		cng.Evn = *env
-	case *port != " ":
-		cng.Server.Port = *port
-	case *host != " ":
-		cng.Server.Host = *host
 	}
+
+	if *postgresPort != " " {
+		cng.Server.Port = *serverPort
+	}
+
+	if *postgresHost != " " {
+		cng.Server.Host = *serverHost
+	}
+
+	if *postgresDatabase != " " {
+		cng.Postgres.Database = *postgresDatabase
+	}
+
+	if *postgresUser != " " {
+		cng.Postgres.User = *postgresUser
+	}
+
+	if *postgresPassword != " " {
+		cng.Postgres.Password = *postgresPassword
+	}
+
+	if *postgresPort != " " {
+		cng.Postgres.Addr.Port = *postgresPort
+	}
+
+	if *postgresHost != " " {
+		cng.Postgres.Addr.Host = *postgresHost
+	}
+
 }
 
 func init() {
