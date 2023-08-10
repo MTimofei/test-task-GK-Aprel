@@ -29,7 +29,7 @@ func New(host, port string) *Server {
 }
 
 func (s *Server) Run() (err error) {
-	defer func() { e.IsError(errServerStopped, err) }()
+	defer func() { err = e.IsError(errServerStopped, err) }()
 
 	err = s.srv.ListenAndServe()
 	if err != http.ErrServerClosed {
@@ -42,7 +42,7 @@ func (s *Server) Run() (err error) {
 }
 
 func (s *Server) Shutdown() (err error) {
-	defer func() { e.IsError(errServerShutdown, err) }()
+	defer func() { err = e.IsError(errServerShutdown, err) }()
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt)
