@@ -13,7 +13,7 @@ const (
 	evnProd  = "prod"
 )
 
-func Logger(evn string) *slog.Logger {
+func New(evn string) *slog.Logger {
 	var logger *slog.Logger
 
 	switch evn {
@@ -46,10 +46,8 @@ func Logger(evn string) *slog.Logger {
 			),
 		)
 	default:
-		log.Panic("logger", "unknown environment")
+		log.Panic("logger ", "unknown environment ", evn)
 	}
-
-	logger.Warn("evn", evn)
 
 	return logger
 }

@@ -8,18 +8,19 @@ import (
 
 type Config struct {
 	Evn    string `json:"env"`
-	Server struct {
-		Port string `json:"port"`
-		Host string `json:"host"`
-	} `json:"server"`
+	Server Server `json:"server"`
+}
+type Server struct {
+	Port string `json:"port"`
+	Host string `json:"host"`
 }
 
 var Cng Config
 
 var (
-	env  = flag.String("EVN", "", "env")
-	port = flag.String("PORT", "", "port")
-	host = flag.String("HOST", "", "host")
+	env  = flag.String("ENV", " ", "env")
+	port = flag.String("PORT", " ", "port")
+	host = flag.String("HOST", " ", "host")
 )
 
 // читаем содержимое конфиг файла
@@ -41,16 +42,16 @@ func mostParseFile(pathFile string, cng *Config) {
 func parseFlags(cng *Config) {
 	flag.Parse()
 	switch {
-	case *env != "":
+	case *env != " ":
 		cng.Evn = *env
-	case *port != "":
+	case *port != " ":
 		cng.Server.Port = *port
-	case *host != "":
+	case *host != " ":
 		cng.Server.Host = *host
 	}
 }
 
 func init() {
-	mostParseFile("config/auth/config.json", &Cng)
+	mostParseFile("./config/auth/config.json", &Cng)
 	parseFlags(&Cng)
 }

@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/auth-api/cmd/auth/internal/logger"
 	"github.com/auth-api/pkg/e"
 )
 
@@ -30,7 +31,7 @@ func New(host, port string) *Server {
 
 func (s *Server) Run() (err error) {
 	defer func() { err = e.IsError(errServerStopped, err) }()
-
+	logger.App.Debug("Server run")
 	err = s.srv.ListenAndServe()
 	if err != http.ErrServerClosed {
 		if err != nil {
@@ -47,10 +48,9 @@ func (s *Server) Shutdown() (err error) {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt)
 	<-quit
-
+	logger.App.Debug("Server shutdown")
 	err = s.srv.Shutdown(context.Background())
 	if err != nil {
-
 		return err
 	}
 
