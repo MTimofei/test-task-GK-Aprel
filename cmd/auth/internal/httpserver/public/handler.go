@@ -11,7 +11,7 @@ import (
 
 var s server
 
-func HendlerAuth(w http.ResponseWriter, r *http.Request) {
+func HandlerAuth(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	query, err := url.ParseQuery(r.URL.RawQuery)
