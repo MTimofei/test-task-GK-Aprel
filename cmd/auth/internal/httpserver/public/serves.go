@@ -30,7 +30,7 @@ const (
 type server struct{}
 
 func (s *server) auth(login, password string, r resource) (token string, err error) {
-	defer func() { e.IsError(errAuthFailed, err) }()
+	defer func() { err = e.IsError(errAuthFailed, err) }()
 
 	err = r.Transaction()
 	if err != nil {
